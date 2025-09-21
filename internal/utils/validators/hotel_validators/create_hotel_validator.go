@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func ValidateHotelPayload(r *http.Request) (*payloads.CreateHotelPayload, error) {

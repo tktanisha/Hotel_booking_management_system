@@ -12,12 +12,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/tktanisha/booking_system/internal/api/handlers"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/constants"
 	"github.com/tktanisha/booking_system/internal/enums/room"
 	user_role "github.com/tktanisha/booking_system/internal/enums/user"
 	roomMocks "github.com/tktanisha/booking_system/internal/mocks"
 	"github.com/tktanisha/booking_system/internal/models"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestRoomHandler_CreateRoom(t *testing.T) {

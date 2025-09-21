@@ -6,11 +6,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	booking_status "github.com/tktanisha/booking_system/internal/enums/booking"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/repository/booking_repo"
 	"github.com/tktanisha/booking_system/internal/services/room_service"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 type BookingService struct {
@@ -32,11 +32,11 @@ func (b *BookingService) CancelBooking(bookingId uuid.UUID) (*models.Bookings, e
 	}
 
 	if booking.CheckIn.Before(time.Now()) {
-		return nil, errors.New("Cannot cancel booking after check-in date")
+		return nil, errors.New("cannot cancel booking after check-in date")
 	}
 
 	if booking.Status == booking_status.StatusCancelled {
-		return nil, errors.New("Booking is already cancelled")
+		return nil, errors.New("booking is already cancelled")
 	}
 
 	booking.Status = booking_status.StatusCancelled
@@ -60,6 +60,7 @@ func (b *BookingService) CancelBooking(bookingId uuid.UUID) (*models.Bookings, e
 		}
 	}
 
+	//update status
 	if err := b.BookingRepo.Save(booking); err != nil {
 		return nil, err
 	}
@@ -73,7 +74,7 @@ func (b *BookingService) CreateBooking(userCtx *models.UserContext, payload *pay
 
 	for _, room := range rooms {
 		if !b.RoomService.IsAvailable(room, hotelId) {
-			return nil, errors.New("Not Available")
+			return nil, errors.New("rooms not available")
 		}
 	}
 
@@ -95,7 +96,7 @@ func (b *BookingService) CreateBooking(userCtx *models.UserContext, payload *pay
 	}
 
 	// Prepare booked rooms
-	roomsData := make([]*models.BookedRooms, 0)
+	bookedRoomsData := make([]*models.BookedRooms, 0)
 	for _, room := range rooms {
 		bookedRoom := &models.BookedRooms{
 			Id:           uuid.New(),
@@ -104,11 +105,10 @@ func (b *BookingService) CreateBooking(userCtx *models.UserContext, payload *pay
 			RoomQuantity: room.Quantity,
 			CreatedAt:    time.Now(),
 		}
-		roomsData = append(roomsData, bookedRoom)
+		bookedRoomsData = append(bookedRoomsData, bookedRoom)
 	}
 
-	// Create booking + booked rooms in one repo method
-	savedBooking, err := b.BookingRepo.CreateBookingWithRooms(&booking, roomsData)
+	savedBooking, err := b.BookingRepo.CreateBookingWithRooms(&booking, bookedRoomsData)
 	if err != nil {
 		return nil, err
 	}

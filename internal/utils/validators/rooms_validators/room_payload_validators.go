@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/enums/room"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func ValidateRoomPayload(r *http.Request) ([]*payloads.RoomPayload, error) {

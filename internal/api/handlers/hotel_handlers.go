@@ -3,12 +3,12 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/tktanisha/booking_system/internal/api/permissions"
-	"github.com/tktanisha/booking_system/internal/api/validators/hotel_validators"
 	"github.com/tktanisha/booking_system/internal/constants"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/services/hotel_service"
 	"github.com/tktanisha/booking_system/internal/utils"
+	"github.com/tktanisha/booking_system/internal/utils/permissions"
+	"github.com/tktanisha/booking_system/internal/utils/validators/hotel_validators"
 )
 
 type HotelHandler struct {

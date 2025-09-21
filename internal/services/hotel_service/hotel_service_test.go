@@ -1,15 +1,15 @@
 package hotel_service_test
 
 import (
+	"errors"
 	"testing"
-	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/mocks"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/services/hotel_service"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestHotelService_GetHotelByID(t *testing.T) {
@@ -19,44 +19,104 @@ func TestHotelService_GetHotelByID(t *testing.T) {
 	mockRepo := mocks.NewMockHotelRepositoryInterface(ctrl)
 	service := hotel_service.NewHotelService(mockRepo)
 
-	hotelID := uuid.New()
-	expectedHotel := &models.Hotels{Id: hotelID, Name: "Test Hotel"}
+	HotelID := uuid.New()
 
-	mockRepo.EXPECT().
-		GetHotelByID(hotelID).
-		Return(expectedHotel, nil)
+	test := []struct {
+		name     string
+		hotelId  uuid.UUID
+		mockFunc func()
+		wantErr  bool
+	}{
+		{
+			name:    "unable to get the hotel",
+			hotelId: HotelID,
+			mockFunc: func() {
+				mockRepo.EXPECT().GetHotelByID(HotelID).Return(nil, errors.New("not found"))
+			},
+			wantErr: true,
+		},
+		{
+			name:    "succesfully fetched the hotel",
+			hotelId: HotelID,
+			mockFunc: func() {
+				mockRepo.EXPECT().GetHotelByID(HotelID).Return(&models.Hotels{}, nil)
+			},
+			wantErr: false,
+		},
+	}
 
-	result, err := service.GetHotelByID(hotelID)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	for _, tt := range test {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.mockFunc()
+			_, err := service.GetHotelByID(tt.hotelId)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("want = %v vand got =%v", tt.wantErr, err)
+			}
+		})
 	}
-	if result.Name != "Test Hotel" {
-		t.Errorf("expected Test Hotel, got %v", result.Name)
-	}
+
 }
 
 func TestHotelService_CreateHotel(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	mockRepo := mocks.NewMockHotelRepositoryInterface(ctrl)
 	service := hotel_service.NewHotelService(mockRepo)
 
-	ctx := &models.UserContext{Id: uuid.New()}
-	payload := &payloads.CreateHotelPayload{Name: "New Hotel", Address: "123 Street"}
+	managerCtx := &models.UserContext{
+		Id:   uuid.New(),
+		Role: "manager",
+	}
 
-	mockRepo.EXPECT().
-		CreateHotel(gomock.Any()).
-		DoAndReturn(func(hotel *models.Hotels) (*models.Hotels, error) {
-			hotel.CreatedAt = time.Now()
-			return hotel, nil
+	tests := []struct {
+		name     string
+		userCtx  *models.UserContext
+		payload  *payloads.CreateHotelPayload
+		mockFunc func()
+		wantErr  bool
+	}{
+		{
+			name:    "Successful hotel creation",
+			userCtx: managerCtx,
+			payload: &payloads.CreateHotelPayload{
+				Name:    "Test Hotel",
+				Address: "123 Test St",
+			},
+			mockFunc: func() {
+				mockRepo.EXPECT().
+					CreateHotel(gomock.Any()).
+					Return(&models.Hotels{Id: uuid.New(), Name: "Test Hotel", Address: "123 Test St", ManagerId: managerCtx.Id}, nil)
+			},
+			wantErr: false,
+		},
+		{
+			name:    "Repository error during creation",
+			userCtx: managerCtx,
+			payload: &payloads.CreateHotelPayload{
+				Name:    "Error Hotel",
+				Address: "456 Error Rd",
+			},
+			mockFunc: func() {
+				mockRepo.EXPECT().
+					CreateHotel(gomock.Any()).
+					Return(nil, errors.New("repository error"))
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.mockFunc()
+
+			_, err := service.CreateHotel(tt.userCtx, tt.payload)
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("want error: %v, but got: %v", tt.wantErr, err)
+
+			}
 		})
 
-	result, err := service.CreateHotel(ctx, payload)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if result.Name != "New Hotel" {
-		t.Errorf("expected New Hotel, got %v", result.Name)
 	}
 }

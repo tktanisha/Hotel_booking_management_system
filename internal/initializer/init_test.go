@@ -10,7 +10,7 @@ import (
 )
 
 func TestInitialize(t *testing.T) {
-	// Create a mock DB
+
 	sqlDB, _, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("failed to create sqlmock: %v", err)
@@ -20,7 +20,6 @@ func TestInitialize(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockDB := mocks.NewMockDB(ctrl)
 
-	// Call the Initialize function
 	initializer.Initialize(mockDB)
 
 	// Validate that all global variables are initialized

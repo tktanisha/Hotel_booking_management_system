@@ -9,8 +9,8 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
-	payloads "github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	models "github.com/tktanisha/booking_system/internal/models"
+	payloads "github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 // MockHotelServiceInterface is a mock of HotelServiceInterface interface.

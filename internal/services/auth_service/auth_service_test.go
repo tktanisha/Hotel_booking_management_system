@@ -38,8 +38,28 @@ func TestAuthService_Register(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:  "hash password error",
+			input: &models.Users{Email: "new@example.com", Password: ""},
+			mockSetup: func() {
+				mockRepo.EXPECT().FindByEmail("new@example.com").
+					Return(nil, errors.New("email not exist"))
+			},
+			wantErr: true,
+		},
+		{
+			name:  "unable to create user(REPO error)",
+			input: &models.Users{Email: "repo_error@example.com", Password: "TestPassword123!"},
+			mockSetup: func() {
+				mockRepo.EXPECT().FindByEmail("repo_error@example.com").
+					Return(nil, errors.New("email not exist"))
+				mockRepo.EXPECT().CreateUser(gomock.Any()).
+					Return(nil, errors.New("unable to create the user"))
+			},
+			wantErr: true,
+		},
+		{
 			name:  "Successful registration",
-			input: &models.Users{Email: "new@example.com", Password: "password"},
+			input: &models.Users{Email: "new@example.com", Password: "TestPassword123!"},
 			mockSetup: func() {
 				mockRepo.EXPECT().
 					FindByEmail("new@example.com").
@@ -70,12 +90,10 @@ func TestAuthService_Register(t *testing.T) {
 
 func TestAuthService_Login(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	mockRepo := mocks.NewMockUserRepoInterface(ctrl)
 	svc := auth_service.NewAuthService(mockRepo)
 
-	// Pre-hash password for success case
 	hashedPass, _ := utils.HashPassword("correct")
 
 	tests := []struct {

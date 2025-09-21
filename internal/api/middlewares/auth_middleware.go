@@ -10,8 +10,8 @@ import (
 	"github.com/tktanisha/booking_system/internal/utils"
 )
 
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return (func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
 			utils.WriteErrorResponse(w, http.StatusUnauthorized, "missing or invalid authorization header", "authorization header must be in format 'Bearer <token>'")

@@ -1,8 +1,6 @@
 package middlewares_test
 
 import (
-	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -93,9 +91,6 @@ func TestAuthMiddleware(t *testing.T) {
 
 			res := rr.Result()
 			defer res.Body.Close()
-
-			body, _ := ioutil.ReadAll(res.Body)
-			fmt.Printf("%s -> %d %s\n", tt.name, res.StatusCode, string(body))
 
 			if res.StatusCode != tt.expectedStatus {
 				t.Errorf("expected status %d, got %d", tt.expectedStatus, res.StatusCode)

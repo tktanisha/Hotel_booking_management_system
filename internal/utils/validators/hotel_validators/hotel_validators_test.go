@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/hotel_validators"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
+	"github.com/tktanisha/booking_system/internal/utils/validators/hotel_validators"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestValidateHotelPayload(t *testing.T) {

@@ -11,7 +11,6 @@ type CreateRoomPayload struct {
 	Price    float64       `json:"price"`
 	Quantity int           `json:"quantity"`
 }
-
 type RoomPayload struct {
 	RoomType room.RoomType `json:"room_type"`
 	Quantity int           `json:"quantity"`

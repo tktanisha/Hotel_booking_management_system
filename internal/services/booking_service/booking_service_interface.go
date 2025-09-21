@@ -3,8 +3,8 @@ package booking_service
 import (
 	"github.com/google/uuid"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/models"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 //go:generate mockgen -source=booking_service_interface.go -destination=../../mocks/mock_booking_service.go -package=mocks

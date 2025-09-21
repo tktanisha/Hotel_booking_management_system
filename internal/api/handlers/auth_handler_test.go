@@ -11,9 +11,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/tktanisha/booking_system/internal/api/handlers"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	authMocks "github.com/tktanisha/booking_system/internal/mocks"
 	"github.com/tktanisha/booking_system/internal/models"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestAuthHandler_Login(t *testing.T) {
@@ -85,7 +85,6 @@ func TestAuthHandler_Login(t *testing.T) {
 
 func TestAuthHandler_Register(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	mockAuthService := authMocks.NewMockAuthServiceInterface(ctrl)
 	handler := handlers.NewAuthHandler(mockAuthService)

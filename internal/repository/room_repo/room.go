@@ -2,6 +2,7 @@ package room_repo
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/tktanisha/booking_system/internal/db"
@@ -45,14 +46,15 @@ func (rr *RoomRepository) GetAllRoomByHotelID(hotelID uuid.UUID) ([]*models.Room
 
 	var rooms []*models.Rooms
 	for rows.Next() {
-		var room models.Rooms
+		room := &models.Rooms{}
 		if err := rows.Scan(&room.Id, &room.HotelId, &room.AvailableQuantity, &room.RoomCategory, &room.CreatedAt); err != nil {
 			return nil, err
 		}
-		rooms = append(rooms, &room)
+		rooms = append(rooms, room)
 	}
 
 	if err = rows.Err(); err != nil {
+		fmt.Println("Error after iterating rows:", err)
 		return nil, err
 	}
 

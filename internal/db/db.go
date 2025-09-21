@@ -5,7 +5,6 @@ import (
 )
 
 //go:generate mockgen -source=db.go -destination=../mocks/mock_db.go -package=mocks
-
 type DB interface {
 	Query(query string, args ...interface{}) (*sql.Rows, error)
 	QueryRow(query string, args ...interface{}) *sql.Row

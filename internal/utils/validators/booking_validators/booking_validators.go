@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func CreateBookingValidator(r *http.Request) (*payloads.BookingPayload, error) {
@@ -34,7 +34,7 @@ func CreateBookingValidator(r *http.Request) (*payloads.BookingPayload, error) {
 		if room.RoomType == "" {
 			return nil, errors.New("room_type is required")
 		}
-		if room.Quantity <= 0 {
+		if room.Quantity < 0 {
 			return nil, errors.New("quantity must be positive")
 		}
 	}

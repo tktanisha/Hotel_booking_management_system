@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/models"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 type RoomFactory interface {

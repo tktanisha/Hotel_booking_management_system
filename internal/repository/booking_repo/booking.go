@@ -17,12 +17,9 @@ func NewBookingRepo(database db.DB) *BookingRepo {
 	return &BookingRepo{db: database}
 }
 
-func (r *BookingRepo) CreateBookingWithRooms(
-	booking *models.Bookings,
-	bookedRooms []*models.BookedRooms,
-) (*models.Bookings, error) {
+func (r *BookingRepo) CreateBookingWithRooms(booking *models.Bookings, bookedRooms []*models.BookedRooms) (*models.Bookings, error) {
 
-	// Step 1: Insert Booking
+	// Insert Booking
 	bookingQuery := `
         INSERT INTO bookings (id, user_id, hotel_id, checkin, checkout, status, created_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -41,7 +38,7 @@ func (r *BookingRepo) CreateBookingWithRooms(
 		return nil, err
 	}
 
-	// Step 2: Insert Booked Rooms
+	//  Insert Booked Rooms
 	bookedRoomsQuery := `
         INSERT INTO booked_rooms (id, booking_id, room_type, room_quantity, created_at)
         VALUES ($1, $2, $3, $4, $5)
@@ -93,6 +90,7 @@ func (r *BookingRepo) GetBookedRoomsByBookingId(bookingId uuid.UUID) ([]*models.
 	}
 	return bookedRooms, nil
 }
+
 
 func (r *BookingRepo) Save(booking *models.Bookings) error {
 	query := `

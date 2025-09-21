@@ -3,11 +3,10 @@ package user_repo
 import (
 	"database/sql"
 	"errors"
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/tktanisha/booking_system/internal/db"
 	"github.com/tktanisha/booking_system/internal/models"
+	"time"
 )
 
 type UserRepo struct {
@@ -20,11 +19,10 @@ func NewUserRepo(database db.DB) *UserRepo {
 
 func (r *UserRepo) CreateUser(user *models.Users) (*models.Users, error) {
 	query := `
-		INSERT INTO users (id, fullname, email, password, role, created_at)
+		INSERT INTO users (id, full_name, email, pass_word, role, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id;
 	`
-	// Ensure ID and CreatedAt are set if not already
 	if user.Id == uuid.Nil {
 		user.Id = uuid.New()
 	}
@@ -40,7 +38,7 @@ func (r *UserRepo) CreateUser(user *models.Users) (*models.Users, error) {
 }
 
 func (r *UserRepo) FindByEmail(email string) (*models.Users, error) {
-	query := `SELECT id, fullname, email, password, role, created_at FROM users WHERE email = $1`
+	query := `SELECT id, full_name, email, pass_word, role, created_at FROM users WHERE email = $1`
 	row := r.db.QueryRow(query, email)
 
 	var user models.Users

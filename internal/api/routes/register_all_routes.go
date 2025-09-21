@@ -1,10 +1,8 @@
 package routes
 
-import (
-	"github.com/tktanisha/booking_system/internal/api/router"
-)
+import "net/http"
 
-func RegisterAllRoutes(r *router.MuxRouter, routeFuncs ...func(*router.MuxRouter)) {
+func RegisterAllRoutes(r *http.ServeMux, routeFuncs ...func(*http.ServeMux)) {
 	for _, register := range routeFuncs {
 		register(r)
 	}

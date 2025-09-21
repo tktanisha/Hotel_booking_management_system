@@ -2,7 +2,6 @@ package auth_service
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	user_role "github.com/tktanisha/booking_system/internal/enums/user"
@@ -22,7 +21,6 @@ func NewAuthService(repo user_repo.UserRepoInterface) *AuthService {
 }
 
 func (a *AuthService) Register(user *models.Users) (*models.Users, error) {
-	fmt.Printf("Register attempt for email: %s\n", user.Email)
 
 	_, err := a.userRepo.FindByEmail(user.Email)
 	if err == nil {
@@ -47,15 +45,14 @@ func (a *AuthService) Register(user *models.Users) (*models.Users, error) {
 }
 
 func (a *AuthService) Login(email, password string) (string, *models.Users, error) {
-	fmt.Printf("Login attempt for email: %s\n", email)
 
 	user, err := a.userRepo.FindByEmail(email)
 	if err != nil {
-		return "", nil, errors.New("invalid credentials")
+		return "", nil, errors.New("invalid email credentials")
 	}
 
 	if !utils.CheckPasswordHash(password, user.Password) {
-		return "", nil, errors.New("invalid credentials")
+		return "", nil, errors.New("invalid password credentials")
 	}
 
 	token, err := utils.GenerateJWT(user.Id, user.Role)

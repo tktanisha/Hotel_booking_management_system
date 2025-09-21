@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/enums/room"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func ValidateCreateRoomPayload(r *http.Request) (*payloads.CreateRoomPayload, error) {

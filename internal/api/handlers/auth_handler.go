@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/auth_validators"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/services/auth_service"
 	error_handler "github.com/tktanisha/booking_system/internal/utils"
 	write_response "github.com/tktanisha/booking_system/internal/utils"
+	"github.com/tktanisha/booking_system/internal/utils/validators/auth_validators"
 )
 
 type AuthHandler struct {
@@ -34,7 +34,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	write_response.WriteSuccessResponse(w, http.StatusOK, "Login successful", map[string]interface{}{
+	write_response.WriteSuccessResponse(w, http.StatusOK, "Login successful", map[string]any{
 		"token": token,
 		"user":  user,
 	})

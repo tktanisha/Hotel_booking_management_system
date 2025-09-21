@@ -3,12 +3,12 @@ package handlers
 import (
 	"net/http"
 
-	validators "github.com/tktanisha/booking_system/internal/api/validators/booking_validators"
 	"github.com/tktanisha/booking_system/internal/constants"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/utils"
 	error_handler "github.com/tktanisha/booking_system/internal/utils"
 	write_response "github.com/tktanisha/booking_system/internal/utils"
+	validators "github.com/tktanisha/booking_system/internal/utils/validators/booking_validators"
 
 	"github.com/tktanisha/booking_system/internal/services/booking_service"
 )

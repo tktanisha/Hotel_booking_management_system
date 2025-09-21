@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/auth_validators"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
+	"github.com/tktanisha/booking_system/internal/utils/validators/auth_validators"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestValidateFullName(t *testing.T) {
@@ -102,12 +102,12 @@ func TestLoginValidate(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		body        interface{}
+		body        any
 		expectError bool
 		errorMsg    string
 	}{
 		{"valid login", validPayload, false, ""},
-		{"invalid JSON", "{invalid json", true, "invalid character"},
+		{"invalid JSON", "{invalid json}", true, "invalid character"},
 		{"invalid email", payloads.LoginRequest{Email: "bademail", Password: "Aa1!abc"}, true, "invalid email format"},
 		{"invalid password", payloads.LoginRequest{Email: "test@example.com", Password: "weak"}, true, "password must be at least 6 characters"},
 	}
@@ -122,7 +122,7 @@ func TestLoginValidate(t *testing.T) {
 				body, _ = json.Marshal(v)
 			}
 
-			req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
+			req := httptest.NewRequest("POST", "/", bytes.NewReader(body))
 			_, err := auth_validators.LoginValidate(req)
 			if tt.expectError {
 				if err == nil || !contains(err.Error(), tt.errorMsg) {
@@ -165,7 +165,7 @@ func TestRegisterValidate(t *testing.T) {
 				body, _ = json.Marshal(v)
 			}
 
-			req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
+			req := httptest.NewRequest("POST", "/", bytes.NewReader(body))
 			_, err := auth_validators.RegisterValidate(req)
 			if tt.expectError {
 				if err == nil || !contains(err.Error(), tt.errorMsg) {

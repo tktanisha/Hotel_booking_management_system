@@ -3,12 +3,12 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/tktanisha/booking_system/internal/api/permissions"
-	validators "github.com/tktanisha/booking_system/internal/api/validators/rooms_validators"
 	"github.com/tktanisha/booking_system/internal/constants"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/services/room_service"
 	"github.com/tktanisha/booking_system/internal/utils"
+	"github.com/tktanisha/booking_system/internal/utils/permissions"
+	validators "github.com/tktanisha/booking_system/internal/utils/validators/rooms_validators"
 )
 
 type RoomHandler struct {

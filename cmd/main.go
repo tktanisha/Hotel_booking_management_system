@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/tktanisha/booking_system/internal/api/router"
 	"github.com/tktanisha/booking_system/internal/api/routes"
 	"github.com/tktanisha/booking_system/internal/config"
 	"github.com/tktanisha/booking_system/internal/db"
@@ -24,7 +23,6 @@ func main() {
 	}
 	defer database.Close()
 
-	// Running migrations
 	// err = db.RunMigrations(database, "./internal/db/tables.sql")
 	// if err != nil {
 	// 	fmt.Printf("Failed to run migrations: %v\n", err)
@@ -36,8 +34,7 @@ func main() {
 
 	// Setting routes
 	mux := http.NewServeMux()
-	r := router.NewMuxRouter(mux)
-	routes.RegisterAllRoutes(r,
+	routes.RegisterAllRoutes(mux,
 		routes.RegisterAuthRoutes,
 		routes.RegisterBookingRoutes,
 		routes.RegisterHotelRoutes,

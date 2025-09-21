@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func LoginValidate(r *http.Request) (*payloads.LoginRequest, error) {

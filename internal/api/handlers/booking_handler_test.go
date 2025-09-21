@@ -13,11 +13,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/tktanisha/booking_system/internal/api/handlers"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/constants"
 	"github.com/tktanisha/booking_system/internal/enums/room"
 	bookingMocks "github.com/tktanisha/booking_system/internal/mocks"
 	"github.com/tktanisha/booking_system/internal/models"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 type CreateBookingRequest struct {
@@ -29,7 +29,6 @@ type CreateBookingRequest struct {
 
 func TestBookingHandler_CreateBooking(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	mockBookingService := bookingMocks.NewMockBookingServiceInterface(ctrl)
 	handler := handlers.NewBookingHandler(mockBookingService)
@@ -49,7 +48,7 @@ func TestBookingHandler_CreateBooking(t *testing.T) {
 	tests := []struct {
 		name           string
 		ctx            context.Context
-		body           interface{}
+		body           any
 		mockService    func()
 		wantStatusCode int
 	}{
@@ -63,7 +62,7 @@ func TestBookingHandler_CreateBooking(t *testing.T) {
 		{
 			name:           "invalid payload",
 			ctx:            context.WithValue(context.Background(), constants.UserContextKey, userCtx),
-			body:           map[string]interface{}{"invalid": "data"},
+			body:           []payloads.BookingPayload{},
 			mockService:    func() {},
 			wantStatusCode: http.StatusBadRequest,
 		},
@@ -111,7 +110,6 @@ func TestBookingHandler_CreateBooking(t *testing.T) {
 
 func TestBookingHandler_CancelBooking(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 
 	mockBookingService := bookingMocks.NewMockBookingServiceInterface(ctrl)
 	handler := handlers.NewBookingHandler(mockBookingService)

@@ -7,11 +7,12 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	booking_status "github.com/tktanisha/booking_system/internal/enums/booking"
+	"github.com/tktanisha/booking_system/internal/enums/room"
 	"github.com/tktanisha/booking_system/internal/mocks"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/services/booking_service"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestBookingService_CancelBooking(t *testing.T) {
@@ -33,92 +34,87 @@ func TestBookingService_CancelBooking(t *testing.T) {
 		{
 			name: "successfully cancelled",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{
-					Id:      bookingID,
-					HotelId: hotelID,
-					CheckIn: time.Now().Add(48 * time.Hour),
-					Status:  booking_status.StatusConfirmed,
-				}, nil)
-				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return([]*models.BookedRooms{
-					{RoomType: "Deluxe", RoomQuantity: 2},
-				}, nil)
-				mockRoomService.EXPECT().IncreaseRoomQuantity(gomock.Any(), hotelID).Return(&models.Rooms{}, nil)
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(
+					&models.Bookings{
+						Id:      bookingID,
+						UserId:  uuid.New(),
+						HotelId: hotelID,
+						CheckIn: time.Now().Add(24 * time.Hour),
+						Status:  booking_status.StatusConfirmed,
+					}, nil)
+				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return(
+					[]*models.BookedRooms{{RoomType: room.Single, RoomQuantity: 2}}, nil)
+				mockRoomService.EXPECT().IncreaseRoomQuantity(gomock.Any(), hotelID).Return(
+					&models.Rooms{}, nil)
 				mockBookingRepo.EXPECT().Save(gomock.Any()).Return(nil)
 			},
+			expectError: false,
 		},
 		{
 			name: "error fetching booking",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(nil, errors.New("db error"))
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(nil, errors.New("booking not found"))
 			},
 			expectError: true,
 		},
 		{
 			name: "cannot cancel after check-in",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{
-					Id:      bookingID,
-					HotelId: hotelID,
-					CheckIn: time.Now().Add(-2 * time.Hour),
-				}, nil)
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{CheckIn: time.Now().Add(-2 * time.Hour)}, nil)
 			},
 			expectError: true,
 		},
 		{
 			name: "booking already cancelled",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{
-					Id:      bookingID,
-					HotelId: hotelID,
-					CheckIn: time.Now().Add(48 * time.Hour),
-					Status:  booking_status.StatusCancelled,
-				}, nil)
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(
+					&models.Bookings{CheckIn: time.Now().Add(-2 * time.Hour), Status: booking_status.StatusCancelled}, nil)
 			},
 			expectError: true,
 		},
 		{
 			name: "error fetching booked rooms",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{
-					Id:      bookingID,
-					HotelId: hotelID,
-					CheckIn: time.Now().Add(48 * time.Hour),
-					Status:  booking_status.StatusConfirmed,
-				}, nil)
-				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return(nil, errors.New("fetch error"))
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(
+					&models.Bookings{CheckIn: time.Now().Add(24 * time.Hour), Status: booking_status.StatusConfirmed}, nil)
+
+				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return(
+					nil, errors.New("db error"))
 			},
 			expectError: true,
 		},
 		{
 			name: "error increasing room quantity",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{
-					Id:      bookingID,
-					HotelId: hotelID,
-					CheckIn: time.Now().Add(48 * time.Hour),
-					Status:  booking_status.StatusConfirmed,
-				}, nil)
-				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return([]*models.BookedRooms{
-					{RoomType: "Deluxe", RoomQuantity: 2},
-				}, nil)
-				mockRoomService.EXPECT().IncreaseRoomQuantity(gomock.Any(), hotelID).Return(nil, errors.New("increase error"))
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(
+					&models.Bookings{
+						Id:      bookingID,
+						HotelId: hotelID,
+						CheckIn: time.Now().Add(24 * time.Hour),
+						Status:  booking_status.StatusConfirmed,
+					}, nil)
+				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return(
+					[]*models.BookedRooms{{RoomType: room.Single, RoomQuantity: 2}}, nil)
+				mockRoomService.EXPECT().IncreaseRoomQuantity(gomock.Any(), hotelID).Return(
+					nil, errors.New("unable to increase"))
 			},
 			expectError: true,
 		},
 		{
 			name: "error saving booking",
 			mockSetup: func() {
-				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(&models.Bookings{
-					Id:      bookingID,
-					HotelId: hotelID,
-					CheckIn: time.Now().Add(48 * time.Hour),
-					Status:  booking_status.StatusConfirmed,
-				}, nil)
-				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return([]*models.BookedRooms{
-					{RoomType: "Deluxe", RoomQuantity: 2},
-				}, nil)
-				mockRoomService.EXPECT().IncreaseRoomQuantity(gomock.Any(), hotelID).Return(&models.Rooms{}, nil)
-				mockBookingRepo.EXPECT().Save(gomock.Any()).Return(errors.New("save error"))
+				mockBookingRepo.EXPECT().GetBookingById(bookingID).Return(
+					&models.Bookings{
+						Id:      bookingID,
+						HotelId: hotelID,
+						CheckIn: time.Now().Add(24 * time.Hour),
+						Status:  booking_status.StatusConfirmed,
+					}, nil)
+				mockBookingRepo.EXPECT().GetBookedRoomsByBookingId(bookingID).Return(
+					[]*models.BookedRooms{{RoomType: room.Single, RoomQuantity: 2}}, nil)
+				mockRoomService.EXPECT().IncreaseRoomQuantity(gomock.Any(), hotelID).Return(
+					&models.Rooms{}, nil)
+				mockBookingRepo.EXPECT().Save(gomock.Any()).Return(errors.New("interanl server error"))
 			},
 			expectError: true,
 		},

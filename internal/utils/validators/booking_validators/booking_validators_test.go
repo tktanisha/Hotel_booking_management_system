@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/booking_validators"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/enums/room"
+	"github.com/tktanisha/booking_system/internal/utils/validators/booking_validators"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 func TestCreateBookingValidator(t *testing.T) {

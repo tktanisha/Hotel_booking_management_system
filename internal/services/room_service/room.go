@@ -4,10 +4,10 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"github.com/tktanisha/booking_system/internal/api/validators/payloads"
 	"github.com/tktanisha/booking_system/internal/models"
 	"github.com/tktanisha/booking_system/internal/repository/room_repo"
 	"github.com/tktanisha/booking_system/internal/services/room_service/factory"
+	"github.com/tktanisha/booking_system/internal/utils/validators/payloads"
 )
 
 type RoomService struct {
@@ -25,7 +25,6 @@ func (r *RoomService) CreateRoom(payload *payloads.CreateRoomPayload) (*models.R
 	if err != nil {
 		return nil, err
 	}
-
 	room := factory.Create(payload)
 
 	room, err = r.RoomRepo.CreateRoom(room)
@@ -41,6 +40,7 @@ func (r *RoomService) IsAvailable(room *payloads.RoomPayload, hotelId uuid.UUID)
 	if err != nil {
 		return false
 	}
+
 	for _, currentRoom := range rooms {
 		if room.RoomType == currentRoom.RoomCategory && currentRoom.AvailableQuantity >= room.Quantity {
 			return true
@@ -68,7 +68,7 @@ func (r *RoomService) ReduceRoomQuantity(room *payloads.RoomPayload, hotelId uui
 }
 
 func (r *RoomService) IncreaseRoomQuantity(room *payloads.RoomPayload, hotelId uuid.UUID) (*models.Rooms, error) {
-	rooms, err := r.RoomRepo.GetAllRoomByHotelID(hotelId)
+	rooms, err := r.GetAllRoomByHotelID(hotelId)
 	if err != nil {
 		return nil, err
 	}
